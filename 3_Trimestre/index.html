@@ -1,256 +1,815 @@
 <!DOCTYPE html>
+<!-- Declaracion del tipo de documento HTML5 -->
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM XTART - Panel de Gestion</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    html { scroll-behavior: smooth; }
+<!-- lang="es" indica al navegador que el contenido esta en español -->
 
+<head>
+  <!-- HEAD: contiene metadatos, estilos y scripts que se cargan antes de mostrar la pagina -->
+
+  <meta charset="UTF-8" />
+  <!-- charset UTF-8: permite usar caracteres especiales como tildes y ñ -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- viewport: hace que la pagina se adapte correctamente a moviles y tablets -->
+
+  <title>CRM XTART — Panel de Gestion</title>
+  <!-- Titulo que aparece en la pestana del navegador -->
+
+  <!-- Google Fonts: cargamos la fuente Inter para un aspecto moderno y profesional -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =====================================================
+       RESET Y BASE
+       Aplicamos la fuente Inter a todos los elementos
+       y desactivamos el margin/padding por defecto
+    ===================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box; /* El padding no aumenta el tamaño del elemento */
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif; /* Fuente principal de toda la pagina */
+      background: #0f172a;             /* Fondo oscuro azul marino */
+      color: #e2e8f0;                  /* Texto claro por defecto */
+      min-height: 100vh;               /* La pagina ocupa al menos toda la pantalla */
+    }
+
+    /* =====================================================
+       FONDO ANIMADO CON PARTICULAS
+       Creamos un fondo dinamico con puntos que se mueven
+       usando un degradado animado con keyframes
+    ===================================================== */
+    body::before {
+      content: '';
+      position: fixed;           /* Fijo en pantalla aunque hagamos scroll */
+      inset: 0;                  /* Cubre toda la pantalla */
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(120,40,200,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(0,180,180,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(30,80,200,0.1) 0%, transparent 50%);
+      /* Tres burbujas de color en distintas posiciones del fondo */
+      animation: bgPulse 8s ease-in-out infinite alternate;
+      /* Se anima suavemente cambiando de forma cada 8 segundos */
+      pointer-events: none; /* No bloquea los clics del usuario */
+      z-index: 0;           /* Detras de todo el contenido */
+    }
+    @keyframes bgPulse {
+      /* Animacion que mueve y transforma las burbujas de fondo */
+      0%   { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(3deg); }
+    }
+
+    /* =====================================================
+       CONTENEDOR PRINCIPAL
+       Limita el ancho maximo y centra el contenido
+    ===================================================== */
+    .container {
+      max-width: 1400px;   /* Ancho maximo de la pagina */
+      margin: 0 auto;      /* Centra horizontalmente */
+      padding: 0 24px;     /* Margen lateral de 24px */
+      position: relative;  /* Para que quede por encima del fondo ::before */
+      z-index: 1;
+    }
+
+    /* =====================================================
+       BARRA DE NAVEGACION SUPERIOR
+    ===================================================== */
+    .navbar {
+      position: sticky;   /* Se queda pegada arriba al hacer scroll */
+      top: 0;
+      z-index: 100;       /* Por encima de todo el resto */
+      background: rgba(15,23,42,0.85);       /* Fondo semitransparente oscuro */
+      backdrop-filter: blur(20px);           /* Desenfoque del contenido detras */
+      -webkit-backdrop-filter: blur(20px);   /* Compatibilidad con Safari */
+      border-bottom: 1px solid rgba(255,255,255,0.06); /* Linea divisora sutil */
+    }
+    .navbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;                       /* Altura fija de la barra */
+      display: flex;                      /* Elementos en fila */
+      align-items: center;                /* Centrados verticalmente */
+      justify-content: space-between;    /* Logo a la izquierda, menu a la derecha */
+    }
+
+    /* Logo del CRM */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-badge {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6); /* Degradado violeta */
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.4); /* Sombra violeta brillante */
+    }
+    .logo-sub {
+      font-size: 0.72rem;
+      color: #64748b;   /* Texto gris apagado */
+      font-weight: 400;
+    }
+
+    /* Enlaces del menu de navegacion */
+    .nav-links {
+      display: flex;
+      gap: 2px;
+    }
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #94a3b8;           /* Color gris azulado */
+      text-decoration: none;    /* Sin subrayado */
+      transition: all 0.2s;     /* Animacion suave al pasar el raton */
+      border: 1px solid transparent; /* Borde invisible por defecto */
+    }
+    .nav-link:hover {
+      background: rgba(99,102,241,0.12); /* Fondo violeta suave al pasar raton */
+      color: #a5b4fc;                    /* Texto violeta claro */
+      border-color: rgba(99,102,241,0.2);
+    }
+
+    /* =====================================================
+       SECCION HERO (banner principal)
+    ===================================================== */
+    .hero {
+      padding: 60px 0 48px;
+      position: relative;
+    }
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99,102,241,0.15);  /* Fondo violeta muy suave */
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 999px;               /* Forma de capsula */
+      padding: 4px 14px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #a5b4fc;                     /* Texto violeta */
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #6366f1;   /* Punto violeta */
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite; /* Punto que parpadea */
+    }
+    @keyframes blink {
+      /* Animacion de parpadeo del punto de estado */
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .hero-title span {
+      /* La palabra "XTART" con degradado de color */
+      background: linear-gradient(135deg, #6366f1, #a855f7, #06b6d4);
+      -webkit-background-clip: text;      /* Aplica el degradado al texto */
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 40px;
+    }
+
+    /* =====================================================
+       TARJETAS DE ESTADISTICAS (KPI cards)
+       Muestran el total de cada modulo en el hero
+    ===================================================== */
+    .stats-grid {
+      display: grid;
+      /* 5 columnas que se adaptan automaticamente al ancho disponible */
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.03);  /* Fondo casi transparente */
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.25s;  /* Animacion suave en hover */
+      text-decoration: none;  /* Sin subrayado (es un enlace de ancla) */
+    }
+    .stat-card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-3px);  /* Sube 3px al pasar el raton */
+      box-shadow: 0 8px 30px rgba(99,102,241,0.15);
+    }
+    .stat-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;  /* No se reduce si hay poco espacio */
+    }
+    .stat-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-top: 3px;
+    }
+
+    /* =====================================================
+       SECCIONES DE TABLAS
+    ===================================================== */
+    .section {
+      margin-bottom: 36px;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f1f5f9;       /* Blanco ligeramente apagado */
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::before {
+      content: '';
+      width: 3px;
+      height: 18px;
+      background: linear-gradient(to bottom, #6366f1, #06b6d4); /* Barra lateral degradada */
+      border-radius: 2px;
+    }
+    .section-desc {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 4px;
+      padding-left: 11px;  /* Alineado con el titulo (3px barra + 8px gap) */
+    }
+
+    /* =====================================================
+       CAJA DE BUSQUEDA
+    ===================================================== */
+    .search-wrap {
+      position: relative;
+    }
+    .search-wrap::before {
+      /* Icono de lupa SVG embebido como imagen de fondo */
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat center;
+      pointer-events: none; /* No interfiere con el clic en el input */
+    }
+    .search-input {
+      background: rgba(255,255,255,0.05);   /* Fondo oscuro semitransparente */
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 8px 14px 8px 36px;           /* Padding izquierdo para la lupa */
+      font-size: 0.78rem;
+      color: #e2e8f0;                        /* Texto claro */
+      width: 220px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      outline: none;
+    }
+    .search-input::placeholder { color: #475569; } /* Color del texto de ayuda */
+    .search-input:focus {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(99,102,241,0.5);   /* Borde violeta al enfocar */
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+      color: white;
+    }
+
+    /* =====================================================
+       TARJETA QUE ENVUELVE CADA TABLA
+    ===================================================== */
+    .table-card {
+      background: rgba(255,255,255,0.02);   /* Fondo casi invisible */
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;  /* Las esquinas redondeadas cortan la tabla */
+      transition: border-color 0.3s;
+    }
+    .table-card:hover {
+      border-color: rgba(99,102,241,0.2); /* Borde violeta sutil al pasar raton */
+    }
+
+    /* =====================================================
+       ESTILOS DE LAS TABLAS
+    ===================================================== */
     .tabla-crm {
       width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
+      border-collapse: collapse;  /* Sin espacio entre celdas */
+      font-size: 0.8rem;
+    }
+
+    /* Cabecera de la tabla */
+    .tabla-crm thead {
+      background: rgba(99,102,241,0.08); /* Fondo violeta muy suave */
+      border-bottom: 1px solid rgba(255,255,255,0.07);
     }
     .tabla-crm th {
-      background-color: #1e3a5f;
-      color: white;
-      padding: 10px 14px;
+      padding: 13px 16px;
       text-align: left;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-    .tabla-crm th:hover { background-color: #2d5082; }
-    .tabla-crm td {
-      padding: 9px 14px;
-      border-bottom: 1px solid #e2e8f0;
-      white-space: nowrap;
-    }
-    .tabla-crm tr:hover td { background-color: #f0f7ff; }
-
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;    /* Texto en mayusculas */
+      letter-spacing: 0.06em;
+      cursor: pointer;              /* Indica que es clickable para ordenar */
+      user-select: none;            /* Evita seleccionar texto al hacer clic */
+      white-space: nowrap;
+      transition: color 0.2s;
     }
-    .badge-nuevo       { background:#dbeafe; color:#1e40af; }
-    .badge-seguimiento { background:#fef9c3; color:#854d0e; }
-    .badge-convertido  { background:#dcfce7; color:#166534; }
-    .badge-perdido     { background:#fee2e2; color:#991b1b; }
-    .badge-activo      { background:#dcfce7; color:#166534; }
-    .badge-inactivo    { background:#f3f4f6; color:#6b7280; }
-    .badge-pendiente   { background:#fef9c3; color:#854d0e; }
-    .badge-cobrada     { background:#dcfce7; color:#166534; }
-    .badge-vencida     { background:#fee2e2; color:#991b1b; }
-    .badge-anulada     { background:#f3f4f6; color:#6b7280; }
-    .badge-servido     { background:#dbeafe; color:#1e40af; }
-    .badge-encurso     { background:#fde8d8; color:#9a3412; }
+    .tabla-crm th:hover { color: #a5b4fc; } /* Cambia a violeta al pasar raton */
+
+    /* Filas del cuerpo de la tabla */
+    .tabla-crm td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04); /* Separador muy sutil */
+      white-space: nowrap;
+      color: #cbd5e1;  /* Texto gris claro */
+    }
+    .tabla-crm tbody tr { transition: background 0.15s; }
+    .tabla-crm tbody tr:hover td {
+      background: rgba(99,102,241,0.06); /* Fondo violeta suave al pasar raton */
+    }
+    .tabla-crm tbody tr:last-child td {
+      border-bottom: none; /* La ultima fila no tiene borde inferior */
+    }
+
+    /* =====================================================
+       BADGES DE ESTADO
+       Pequenas etiquetas de colores para indicar el estado
+    ===================================================== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;  /* Forma de capsula */
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent; /* Borde que se coloreara por clase */
+    }
+    .badge::before {
+      /* Punto de color antes del texto */
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor; /* Mismo color que el texto */
+      opacity: 0.8;
+    }
+
+    /* Colores de cada estado */
+    .badge-nuevo       { background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.2); }
+    .badge-seguimiento { background:rgba(245,158,11,0.15); color:#fbbf24; border-color:rgba(245,158,11,0.2); }
+    .badge-convertido  { background:rgba(16,185,129,0.15); color:#34d399; border-color:rgba(16,185,129,0.2); }
+    .badge-perdido     { background:rgba(239,68,68,0.15);  color:#f87171; border-color:rgba(239,68,68,0.2); }
+    .badge-activo      { background:rgba(16,185,129,0.15); color:#34d399; border-color:rgba(16,185,129,0.2); }
+    .badge-inactivo    { background:rgba(100,116,139,0.15);color:#94a3b8; border-color:rgba(100,116,139,0.2); }
+    .badge-pendiente   { background:rgba(245,158,11,0.15); color:#fbbf24; border-color:rgba(245,158,11,0.2); }
+    .badge-cobrada     { background:rgba(16,185,129,0.15); color:#34d399; border-color:rgba(16,185,129,0.2); }
+    .badge-vencida     { background:rgba(239,68,68,0.15);  color:#f87171; border-color:rgba(239,68,68,0.2); }
+    .badge-anulada     { background:rgba(100,116,139,0.15);color:#94a3b8; border-color:rgba(100,116,139,0.2); }
+    .badge-servido     { background:rgba(6,182,212,0.15);  color:#22d3ee; border-color:rgba(6,182,212,0.2); }
+    .badge-encurso     { background:rgba(249,115,22,0.15); color:#fb923c; border-color:rgba(249,115,22,0.2); }
+
+    /* =====================================================
+       CHIP: pequeña etiqueta para codigos y zonas
+    ===================================================== */
+    .chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(6,182,212,0.1);   /* Fondo cian suave */
+      color: #22d3ee;                     /* Texto cian */
+      border: 1px solid rgba(6,182,212,0.2);
+    }
+
+    /* =====================================================
+       TEXTO RESALTADO EN VERDE PARA IMPORTES
+    ===================================================== */
+    .amount {
+      font-weight: 700;
+      color: #34d399; /* Verde esmeralda para cantidades de dinero */
+    }
+
+    /* =====================================================
+       EMAIL: enlace con color especial
+    ===================================================== */
+    .email {
+      color: #818cf8; /* Violeta claro */
+      font-size: 0.75rem;
+    }
+
+    /* =====================================================
+       SCROLLBAR PERSONALIZADA
+       Cambiamos el aspecto de la barra de desplazamiento
+    ===================================================== */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    .footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: #334155;
+      margin-top: 20px;
+    }
+    .footer span { color: #6366f1; font-weight: 600; } /* Nombre en violeta */
+
+    /* =====================================================
+       ANIMACION DE ENTRADA
+       Las secciones aparecen con un efecto de fade + slide
+    ===================================================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .section {
+      animation: fadeUp 0.4s ease both; /* Aplica la animacion una sola vez */
+    }
+    /* Cada seccion empieza un poco despues que la anterior */
+    .section:nth-child(1) { animation-delay: 0.05s; }
+    .section:nth-child(2) { animation-delay: 0.10s; }
+    .section:nth-child(3) { animation-delay: 0.15s; }
+    .section:nth-child(4) { animation-delay: 0.20s; }
+    .section:nth-child(5) { animation-delay: 0.25s; }
+
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
 
-  <!-- CABECERA FIJA -->
-  <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-xl font-bold">CRM<span class="text-teal-300">XTART</span></span>
-        <span class="text-blue-300 text-xs hidden md:block">Customer Relationship Management - 1º DAM</span>
+<body>
+
+  <!-- =====================================================
+       BARRA DE NAVEGACION
+       Sticky: se queda fija arriba al hacer scroll
+  ===================================================== -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-badge">CRM XTART</div>
+        <span class="logo-sub">1º DAM · Tercer Trimestre</span>
       </div>
-      <nav class="flex gap-4 text-sm font-medium">
-        <a href="#comerciales"          class="hover:text-teal-300 transition-colors">Comerciales</a>
-        <a href="#clientes-potenciales" class="hover:text-teal-300 transition-colors">Potenciales</a>
-        <a href="#clientes"             class="hover:text-teal-300 transition-colors">Clientes</a>
-        <a href="#pedidos"              class="hover:text-teal-300 transition-colors">Pedidos</a>
-        <a href="#facturas"             class="hover:text-teal-300 transition-colors">Facturas</a>
-      </nav>
-    </div>
-  </header>
 
-  <!-- BANNER -->
-  <div class="bg-blue-800 text-white py-8 px-6">
-    <div class="max-w-7xl mx-auto">
-      <h1 class="text-2xl font-bold mb-1">Panel de Gestion del CRM</h1>
-      <p class="text-blue-300 text-sm">Visualizacion en tiempo real de todos los modulos del sistema.</p>
+      <!-- Menu de navegacion: cada enlace lleva a una seccion de la pagina -->
+      <div class="nav-links">
+        <a href="#comerciales"          class="nav-link">Comerciales</a>
+        <a href="#clientes-potenciales" class="nav-link">Potenciales</a>
+        <a href="#clientes"             class="nav-link">Clientes</a>
+        <a href="#pedidos"              class="nav-link">Pedidos</a>
+        <a href="#facturas"             class="nav-link">Facturas</a>
+      </div>
+
     </div>
+  </nav>
+
+  <!-- =====================================================
+       HERO / BANNER PRINCIPAL
+       Titulo, subtitulo y tarjetas de estadisticas
+  ===================================================== -->
+  <div class="hero">
+    <div class="container">
+
+      <!-- Etiqueta de estado con punto parpadeante -->
+      <div class="hero-label">Sistema activo</div>
+
+      <!-- Titulo principal con degradado en la palabra XTART -->
+      <h1 class="hero-title">
+        Panel de gestion<br>
+        <span>CRM XTART</span>
+      </h1>
+
+      <!-- Subtitulo descriptivo -->
+      <p class="hero-sub">Visualizacion en tiempo real · Proyecto Intermodular 1º DAM · XTART Formacion Profesional</p>
+
+      <!-- GRID DE TARJETAS KPI
+           Cada tarjeta es un enlace que lleva a la seccion correspondiente
+           Los numeros se rellenan desde JavaScript cuando carga la API -->
+      <div class="stats-grid">
+
+        <!-- Tarjeta Comerciales -->
+        <a href="#comerciales" class="stat-card">
+          <div class="stat-icon" style="background:rgba(99,102,241,0.15);">👤</div>
+          <div>
+            <div class="stat-num" id="stat-comerciales">—</div>
+            <!-- El — se reemplaza por el numero real cuando JS carga los datos -->
+            <div class="stat-label">Comerciales</div>
+          </div>
+        </a>
+
+        <!-- Tarjeta Potenciales -->
+        <a href="#clientes-potenciales" class="stat-card">
+          <div class="stat-icon" style="background:rgba(245,158,11,0.15);">🎯</div>
+          <div>
+            <div class="stat-num" id="stat-potenciales">—</div>
+            <div class="stat-label">Potenciales</div>
+          </div>
+        </a>
+
+        <!-- Tarjeta Clientes -->
+        <a href="#clientes" class="stat-card">
+          <div class="stat-icon" style="background:rgba(16,185,129,0.15);">🏢</div>
+          <div>
+            <div class="stat-num" id="stat-clientes">—</div>
+            <div class="stat-label">Clientes</div>
+          </div>
+        </a>
+
+        <!-- Tarjeta Pedidos -->
+        <a href="#pedidos" class="stat-card">
+          <div class="stat-icon" style="background:rgba(249,115,22,0.15);">📦</div>
+          <div>
+            <div class="stat-num" id="stat-pedidos">—</div>
+            <div class="stat-label">Pedidos</div>
+          </div>
+        </a>
+
+        <!-- Tarjeta Facturas -->
+        <a href="#facturas" class="stat-card">
+          <div class="stat-icon" style="background:rgba(168,85,247,0.15);">🧾</div>
+          <div>
+            <div class="stat-num" id="stat-facturas">—</div>
+            <div class="stat-label">Facturas</div>
+          </div>
+        </a>
+
+      </div>
+      <!-- fin stats-grid -->
+
+    </div>
+    <!-- fin container -->
   </div>
+  <!-- fin hero -->
 
-  <main class="max-w-7xl mx-auto px-6 py-10 space-y-16">
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL: las 5 secciones con tablas
+  ===================================================== -->
+  <main style="padding-bottom: 40px; position:relative; z-index:1;">
+    <div class="container">
 
-    <!-- COMERCIALES -->
-    <section id="comerciales">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Comerciales</h2>
-        <input
-          type="text"
-          id="filtro-comerciales"
-          placeholder="Buscar comercial..."
-          onkeyup="filtrarTabla('tabla-comerciales', this.value)"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl shadow overflow-x-auto">
-        <table class="tabla-crm" id="tabla-comerciales">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla('tabla-comerciales',0)">#</th>
-              <th onclick="ordenarTabla('tabla-comerciales',1)">Nombre ↕</th>
-              <th onclick="ordenarTabla('tabla-comerciales',2)">Apellidos ↕</th>
-              <th onclick="ordenarTabla('tabla-comerciales',3)">Email ↕</th>
-              <th onclick="ordenarTabla('tabla-comerciales',4)">Telefono</th>
-              <th onclick="ordenarTabla('tabla-comerciales',5)">Zona ↕</th>
-              <th onclick="ordenarTabla('tabla-comerciales',6)">Fecha Alta ↕</th>
-            </tr>
-          </thead>
-          <tbody id="body-comerciales">
-            <tr><td colspan="7" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- ================================================
+           SECCION 1: COMERCIALES
+      ================================================ -->
+      <section class="section" id="comerciales">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Comerciales</h2>
+            <!-- Descripcion de la seccion -->
+            <p class="section-desc">Equipo de ventas activo por zona geografica</p>
+          </div>
+          <!-- Input de busqueda: onkeyup llama a filtrarTabla en cada tecla pulsada -->
+          <div class="search-wrap">
+            <input class="search-input" type="text" placeholder="Buscar comercial..."
+              onkeyup="filtrarTabla('tabla-comerciales', this.value)"/>
+          </div>
+        </div>
 
-    <!-- CLIENTES POTENCIALES -->
-    <section id="clientes-potenciales">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Clientes Potenciales</h2>
-        <input
-          type="text"
-          id="filtro-potenciales"
-          placeholder="Buscar potencial..."
-          onkeyup="filtrarTabla('tabla-potenciales', this.value)"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl shadow overflow-x-auto">
-        <table class="tabla-crm" id="tabla-potenciales">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla('tabla-potenciales',0)">#</th>
-              <th onclick="ordenarTabla('tabla-potenciales',1)">Nombre ↕</th>
-              <th onclick="ordenarTabla('tabla-potenciales',2)">Empresa ↕</th>
-              <th onclick="ordenarTabla('tabla-potenciales',3)">Email</th>
-              <th onclick="ordenarTabla('tabla-potenciales',4)">Fuente ↕</th>
-              <th onclick="ordenarTabla('tabla-potenciales',5)">Estado ↕</th>
-              <th onclick="ordenarTabla('tabla-potenciales',6)">Fecha Contacto ↕</th>
-              <th onclick="ordenarTabla('tabla-potenciales',7)">Comercial ↕</th>
-            </tr>
-          </thead>
-          <tbody id="body-potenciales">
-            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+        <!-- Tarjeta que envuelve la tabla con bordes redondeados -->
+        <div class="table-card">
+          <div style="overflow-x:auto;">
+            <!-- overflow-x:auto permite scroll horizontal en pantallas pequenas -->
+            <table class="tabla-crm" id="tabla-comerciales">
+              <thead>
+                <tr>
+                  <!-- onclick en cada th llama a ordenarTabla con el indice de columna -->
+                  <th onclick="ordenarTabla('tabla-comerciales',0)"># ↕</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',1)">Nombre ↕</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',2)">Apellidos ↕</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',3)">Email ↕</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',4)">Telefono</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',5)">Zona ↕</th>
+                  <th onclick="ordenarTabla('tabla-comerciales',6)">Fecha Alta ↕</th>
+                </tr>
+              </thead>
+              <tbody id="body-comerciales">
+                <!-- El contenido lo inserta JavaScript dinamicamente -->
+                <tr><td colspan="7" style="text-align:center;padding:40px;color:#334155;">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-    <!-- CLIENTES FORMALES -->
-    <section id="clientes">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Clientes Formales</h2>
-        <input
-          type="text"
-          id="filtro-clientes"
-          placeholder="Buscar cliente..."
-          onkeyup="filtrarTabla('tabla-clientes', this.value)"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl shadow overflow-x-auto">
-        <table class="tabla-crm" id="tabla-clientes">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla('tabla-clientes',0)">Codigo ↕</th>
-              <th onclick="ordenarTabla('tabla-clientes',1)">Razon Social ↕</th>
-              <th onclick="ordenarTabla('tabla-clientes',2)">NIF</th>
-              <th onclick="ordenarTabla('tabla-clientes',3)">Contacto ↕</th>
-              <th onclick="ordenarTabla('tabla-clientes',4)">Telefono</th>
-              <th onclick="ordenarTabla('tabla-clientes',5)">Email</th>
-              <th onclick="ordenarTabla('tabla-clientes',6)">Condiciones Pago ↕</th>
-              <th onclick="ordenarTabla('tabla-clientes',7)">Descuento</th>
-              <th onclick="ordenarTabla('tabla-clientes',8)">Estado ↕</th>
-            </tr>
-          </thead>
-          <tbody id="body-clientes">
-            <tr><td colspan="9" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- ================================================
+           SECCION 2: CLIENTES POTENCIALES
+      ================================================ -->
+      <section class="section" id="clientes-potenciales">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Clientes Potenciales</h2>
+            <p class="section-desc">Pipeline de ventas y seguimiento comercial</p>
+          </div>
+          <div class="search-wrap">
+            <input class="search-input" type="text" placeholder="Buscar potencial..."
+              onkeyup="filtrarTabla('tabla-potenciales', this.value)"/>
+          </div>
+        </div>
+        <div class="table-card">
+          <div style="overflow-x:auto;">
+            <table class="tabla-crm" id="tabla-potenciales">
+              <thead>
+                <tr>
+                  <th onclick="ordenarTabla('tabla-potenciales',0)"># ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',1)">Nombre ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',2)">Empresa ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',3)">Email</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',4)">Fuente ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',5)">Estado ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',6)">Fecha Contacto ↕</th>
+                  <th onclick="ordenarTabla('tabla-potenciales',7)">Comercial ↕</th>
+                </tr>
+              </thead>
+              <tbody id="body-potenciales">
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:#334155;">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-    <!-- PEDIDOS -->
-    <section id="pedidos">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Pedidos</h2>
-        <input
-          type="text"
-          id="filtro-pedidos"
-          placeholder="Buscar pedido..."
-          onkeyup="filtrarTabla('tabla-pedidos', this.value)"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl shadow overflow-x-auto">
-        <table class="tabla-crm" id="tabla-pedidos">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla('tabla-pedidos',0)">#</th>
-              <th onclick="ordenarTabla('tabla-pedidos',1)">Fecha ↕</th>
-              <th onclick="ordenarTabla('tabla-pedidos',2)">Cliente ↕</th>
-              <th onclick="ordenarTabla('tabla-pedidos',3)">Comercial ↕</th>
-              <th onclick="ordenarTabla('tabla-pedidos',4)">Estado ↕</th>
-              <th onclick="ordenarTabla('tabla-pedidos',5)">Base Imponible ↕</th>
-              <th onclick="ordenarTabla('tabla-pedidos',6)">IVA %</th>
-              <th onclick="ordenarTabla('tabla-pedidos',7)">Total ↕</th>
-            </tr>
-          </thead>
-          <tbody id="body-pedidos">
-            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- ================================================
+           SECCION 3: CLIENTES FORMALES
+      ================================================ -->
+      <section class="section" id="clientes">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Clientes Formales</h2>
+            <p class="section-desc">Base de clientes con contrato activo o inactivo</p>
+          </div>
+          <div class="search-wrap">
+            <input class="search-input" type="text" placeholder="Buscar cliente..."
+              onkeyup="filtrarTabla('tabla-clientes', this.value)"/>
+          </div>
+        </div>
+        <div class="table-card">
+          <div style="overflow-x:auto;">
+            <table class="tabla-crm" id="tabla-clientes">
+              <thead>
+                <tr>
+                  <th onclick="ordenarTabla('tabla-clientes',0)">Codigo ↕</th>
+                  <th onclick="ordenarTabla('tabla-clientes',1)">Razon Social ↕</th>
+                  <th onclick="ordenarTabla('tabla-clientes',2)">NIF</th>
+                  <th onclick="ordenarTabla('tabla-clientes',3)">Contacto ↕</th>
+                  <th onclick="ordenarTabla('tabla-clientes',4)">Telefono</th>
+                  <th onclick="ordenarTabla('tabla-clientes',5)">Email</th>
+                  <th onclick="ordenarTabla('tabla-clientes',6)">Condiciones Pago ↕</th>
+                  <th onclick="ordenarTabla('tabla-clientes',7)">Descuento</th>
+                  <th onclick="ordenarTabla('tabla-clientes',8)">Estado ↕</th>
+                </tr>
+              </thead>
+              <tbody id="body-clientes">
+                <tr><td colspan="9" style="text-align:center;padding:40px;color:#334155;">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-    <!-- FACTURAS -->
-    <section id="facturas">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Facturas</h2>
-        <input
-          type="text"
-          id="filtro-facturas"
-          placeholder="Buscar factura..."
-          onkeyup="filtrarTabla('tabla-facturas', this.value)"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div class="bg-white rounded-xl shadow overflow-x-auto">
-        <table class="tabla-crm" id="tabla-facturas">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla('tabla-facturas',0)">Numero ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',1)">Cliente ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',2)">Fecha Emision ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',3)">Fecha Vencimiento ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',4)">Base Imponible ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',5)">IVA %</th>
-              <th onclick="ordenarTabla('tabla-facturas',6)">Total ↕</th>
-              <th onclick="ordenarTabla('tabla-facturas',7)">Estado ↕</th>
-            </tr>
-          </thead>
-          <tbody id="body-facturas">
-            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- ================================================
+           SECCION 4: PEDIDOS
+      ================================================ -->
+      <section class="section" id="pedidos">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Pedidos</h2>
+            <p class="section-desc">Historial completo de pedidos por estado</p>
+          </div>
+          <div class="search-wrap">
+            <input class="search-input" type="text" placeholder="Buscar pedido..."
+              onkeyup="filtrarTabla('tabla-pedidos', this.value)"/>
+          </div>
+        </div>
+        <div class="table-card">
+          <div style="overflow-x:auto;">
+            <table class="tabla-crm" id="tabla-pedidos">
+              <thead>
+                <tr>
+                  <th onclick="ordenarTabla('tabla-pedidos',0)"># ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',1)">Fecha ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',2)">Cliente ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',3)">Comercial ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',4)">Estado ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',5)">Base Imponible ↕</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',6)">IVA %</th>
+                  <th onclick="ordenarTabla('tabla-pedidos',7)">Total ↕</th>
+                </tr>
+              </thead>
+              <tbody id="body-pedidos">
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:#334155;">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
+      <!-- ================================================
+           SECCION 5: FACTURAS
+      ================================================ -->
+      <section class="section" id="facturas">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Facturas</h2>
+            <p class="section-desc">Facturacion emitida y estados de cobro</p>
+          </div>
+          <div class="search-wrap">
+            <input class="search-input" type="text" placeholder="Buscar factura..."
+              onkeyup="filtrarTabla('tabla-facturas', this.value)"/>
+          </div>
+        </div>
+        <div class="table-card">
+          <div style="overflow-x:auto;">
+            <table class="tabla-crm" id="tabla-facturas">
+              <thead>
+                <tr>
+                  <th onclick="ordenarTabla('tabla-facturas',0)">Numero ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',1)">Cliente ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',2)">Fecha Emision ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',3)">Fecha Vencimiento ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',4)">Base Imponible ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',5)">IVA %</th>
+                  <th onclick="ordenarTabla('tabla-facturas',6)">Total ↕</th>
+                  <th onclick="ordenarTabla('tabla-facturas',7)">Estado ↕</th>
+                </tr>
+              </thead>
+              <tbody id="body-facturas">
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:#334155;">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- fin container -->
   </main>
 
-  <footer class="bg-blue-900 text-blue-300 text-center py-4 text-xs mt-10">
-    CRM XTART &copy; 2025 - Proyecto Intermodular 1&ordm; DAM - Tercer Trimestre
+  <!-- =====================================================
+       FOOTER
+       Barra inferior con informacion del proyecto
+  ===================================================== -->
+  <footer class="footer">
+    <span>CRM XTART</span> &nbsp;·&nbsp;
+    Proyecto Intermodular 1º DAM &nbsp;·&nbsp;
+    Tercer Trimestre 2025 &nbsp;·&nbsp;
+    XTART Formacion Profesional, Madrid
   </footer>
 
+  <!-- Cargamos el archivo JavaScript que contiene toda la logica -->
+  <!-- Se pone al final del body para que el HTML ya este cargado cuando se ejecute -->
   <script src="app.js"></script>
 
 </body>
