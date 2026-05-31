@@ -144,3 +144,55 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarDatos("/pedidos",              renderPedidos);
   cargarDatos("/facturas",             renderFacturas);
 });
+// ============================================================
+// FILTRADO
+// ============================================================
+function filtrarTabla(idTabla, texto) {
+  const tabla = document.getElementById(idTabla);
+  const filas = tabla.getElementsByTagName("tr");
+  const textoBusqueda = texto.toLowerCase();
+
+  for (let i = 1; i < filas.length; i++) {
+    const celdas = filas[i].getElementsByTagName("td");
+    let encontrado = false;
+    for (let j = 0; j < celdas.length; j++) {
+      if (celdas[j].textContent.toLowerCase().includes(textoBusqueda)) {
+        encontrado = true;
+        break;
+      }
+    }
+    filas[i].style.display = encontrado ? "" : "none";
+  }
+}
+
+// ============================================================
+// ORDENACION
+// ============================================================
+const estadoOrden = {};
+
+function ordenarTabla(idTabla, columna) {
+  const tabla = document.getElementById(idTabla);
+  const tbody = tabla.querySelector("tbody");
+  const filas = Array.from(tbody.querySelectorAll("tr"));
+
+  const clave = idTabla + "_" + columna;
+  const ascendente = !estadoOrden[clave];
+  estadoOrden[clave] = ascendente;
+
+  filas.sort((a, b) => {
+    const celdaA = a.querySelectorAll("td")[columna]?.textContent.trim() || "";
+    const celdaB = b.querySelectorAll("td")[columna]?.textContent.trim() || "";
+
+    const numA = parseFloat(celdaA.replace(/[€%]/g, "").replace(",", "."));
+    const numB = parseFloat(celdaB.replace(/[€%]/g, "").replace(",", "."));
+
+    if (!isNaN(numA) && !isNaN(numB)) {
+      return ascendente ? numA - numB : numB - numA;
+    }
+    return ascendente
+      ? celdaA.localeCompare(celdaB, "es")
+      : celdaB.localeCompare(celdaA, "es");
+  });
+
+  filas.forEach(f => tbody.appendChild(f));
+}
