@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM XTART - Panel de Gestion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .tabla-crm {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .tabla-crm th {
+      background-color: #1e3a5f;
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .tabla-crm th:hover { background-color: #2d5082; }
+    .tabla-crm td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    .tabla-crm tr:hover td { background-color: #f0f7ff; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-nuevo       { background:#dbeafe; color:#1e40af; }
+    .badge-seguimiento { background:#fef9c3; color:#854d0e; }
+    .badge-convertido  { background:#dcfce7; color:#166534; }
+    .badge-perdido     { background:#fee2e2; color:#991b1b; }
+    .badge-activo      { background:#dcfce7; color:#166534; }
+    .badge-inactivo    { background:#f3f4f6; color:#6b7280; }
+    .badge-pendiente   { background:#fef9c3; color:#854d0e; }
+    .badge-cobrada     { background:#dcfce7; color:#166534; }
+    .badge-vencida     { background:#fee2e2; color:#991b1b; }
+    .badge-anulada     { background:#f3f4f6; color:#6b7280; }
+    .badge-servido     { background:#dbeafe; color:#1e40af; }
+    .badge-encurso     { background:#fde8d8; color:#9a3412; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- CABECERA FIJA -->
+  <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xl font-bold">CRM<span class="text-teal-300">XTART</span></span>
+        <span class="text-blue-300 text-xs hidden md:block">Customer Relationship Management - 1º DAM</span>
+      </div>
+      <nav class="flex gap-4 text-sm font-medium">
+        <a href="#comerciales"          class="hover:text-teal-300 transition-colors">Comerciales</a>
+        <a href="#clientes-potenciales" class="hover:text-teal-300 transition-colors">Potenciales</a>
+        <a href="#clientes"             class="hover:text-teal-300 transition-colors">Clientes</a>
+        <a href="#pedidos"              class="hover:text-teal-300 transition-colors">Pedidos</a>
+        <a href="#facturas"             class="hover:text-teal-300 transition-colors">Facturas</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- BANNER -->
+  <div class="bg-blue-800 text-white py-8 px-6">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-2xl font-bold mb-1">Panel de Gestion del CRM</h1>
+      <p class="text-blue-300 text-sm">Visualizacion en tiempo real de todos los modulos del sistema.</p>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-6 py-10 space-y-16">
+
+    <!-- COMERCIALES -->
+    <section id="comerciales">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Comerciales</h2>
+        <input
+          type="text"
+          id="filtro-comerciales"
+          placeholder="Buscar comercial..."
+          onkeyup="filtrarTabla('tabla-comerciales', this.value)"
+          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="tabla-crm" id="tabla-comerciales">
+          <thead>
+            <tr>
+              <th onclick="ordenarTabla('tabla-comerciales',0)">#</th>
+              <th onclick="ordenarTabla('tabla-comerciales',1)">Nombre ↕</th>
+              <th onclick="ordenarTabla('tabla-comerciales',2)">Apellidos ↕</th>
+              <th onclick="ordenarTabla('tabla-comerciales',3)">Email ↕</th>
+              <th onclick="ordenarTabla('tabla-comerciales',4)">Telefono</th>
+              <th onclick="ordenarTabla('tabla-comerciales',5)">Zona ↕</th>
+              <th onclick="ordenarTabla('tabla-comerciales',6)">Fecha Alta ↕</th>
+            </tr>
+          </thead>
+          <tbody id="body-comerciales">
+            <tr><td colspan="7" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLIENTES POTENCIALES -->
+    <section id="clientes-potenciales">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Clientes Potenciales</h2>
+        <input
+          type="text"
+          id="filtro-potenciales"
+          placeholder="Buscar potencial..."
+          onkeyup="filtrarTabla('tabla-potenciales', this.value)"
+          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="tabla-crm" id="tabla-potenciales">
+          <thead>
+            <tr>
+              <th onclick="ordenarTabla('tabla-potenciales',0)">#</th>
+              <th onclick="ordenarTabla('tabla-potenciales',1)">Nombre ↕</th>
+              <th onclick="ordenarTabla('tabla-potenciales',2)">Empresa ↕</th>
+              <th onclick="ordenarTabla('tabla-potenciales',3)">Email</th>
+              <th onclick="ordenarTabla('tabla-potenciales',4)">Fuente ↕</th>
+              <th onclick="ordenarTabla('tabla-potenciales',5)">Estado ↕</th>
+              <th onclick="ordenarTabla('tabla-potenciales',6)">Fecha Contacto ↕</th>
+              <th onclick="ordenarTabla('tabla-potenciales',7)">Comercial ↕</th>
+            </tr>
+          </thead>
+          <tbody id="body-potenciales">
+            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLIENTES FORMALES -->
+    <section id="clientes">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Clientes Formales</h2>
+        <input
+          type="text"
+          id="filtro-clientes"
+          placeholder="Buscar cliente..."
+          onkeyup="filtrarTabla('tabla-clientes', this.value)"
+          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="tabla-crm" id="tabla-clientes">
+          <thead>
+            <tr>
+              <th onclick="ordenarTabla('tabla-clientes',0)">Codigo ↕</th>
+              <th onclick="ordenarTabla('tabla-clientes',1)">Razon Social ↕</th>
+              <th onclick="ordenarTabla('tabla-clientes',2)">NIF</th>
+              <th onclick="ordenarTabla('tabla-clientes',3)">Contacto ↕</th>
+              <th onclick="ordenarTabla('tabla-clientes',4)">Telefono</th>
+              <th onclick="ordenarTabla('tabla-clientes',5)">Email</th>
+              <th onclick="ordenarTabla('tabla-clientes',6)">Condiciones Pago ↕</th>
+              <th onclick="ordenarTabla('tabla-clientes',7)">Descuento</th>
+              <th onclick="ordenarTabla('tabla-clientes',8)">Estado ↕</th>
+            </tr>
+          </thead>
+          <tbody id="body-clientes">
+            <tr><td colspan="9" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PEDIDOS -->
+    <section id="pedidos">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Pedidos</h2>
+        <input
+          type="text"
+          id="filtro-pedidos"
+          placeholder="Buscar pedido..."
+          onkeyup="filtrarTabla('tabla-pedidos', this.value)"
+          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="tabla-crm" id="tabla-pedidos">
+          <thead>
+            <tr>
+              <th onclick="ordenarTabla('tabla-pedidos',0)">#</th>
+              <th onclick="ordenarTabla('tabla-pedidos',1)">Fecha ↕</th>
+              <th onclick="ordenarTabla('tabla-pedidos',2)">Cliente ↕</th>
+              <th onclick="ordenarTabla('tabla-pedidos',3)">Comercial ↕</th>
+              <th onclick="ordenarTabla('tabla-pedidos',4)">Estado ↕</th>
+              <th onclick="ordenarTabla('tabla-pedidos',5)">Base Imponible ↕</th>
+              <th onclick="ordenarTabla('tabla-pedidos',6)">IVA %</th>
+              <th onclick="ordenarTabla('tabla-pedidos',7)">Total ↕</th>
+            </tr>
+          </thead>
+          <tbody id="body-pedidos">
+            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FACTURAS -->
+    <section id="facturas">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg font-bold text-blue-900 border-l-4 border-teal-400 pl-3">Facturas</h2>
+        <input
+          type="text"
+          id="filtro-facturas"
+          placeholder="Buscar factura..."
+          onkeyup="filtrarTabla('tabla-facturas', this.value)"
+          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="tabla-crm" id="tabla-facturas">
+          <thead>
+            <tr>
+              <th onclick="ordenarTabla('tabla-facturas',0)">Numero ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',1)">Cliente ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',2)">Fecha Emision ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',3)">Fecha Vencimiento ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',4)">Base Imponible ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',5)">IVA %</th>
+              <th onclick="ordenarTabla('tabla-facturas',6)">Total ↕</th>
+              <th onclick="ordenarTabla('tabla-facturas',7)">Estado ↕</th>
+            </tr>
+          </thead>
+          <tbody id="body-facturas">
+            <tr><td colspan="8" class="text-center py-6 text-gray-400">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-blue-900 text-blue-300 text-center py-4 text-xs mt-10">
+    CRM XTART &copy; 2025 - Proyecto Intermodular 1&ordm; DAM - Tercer Trimestre
+  </footer>
+
+  <script src="js/app.js"></script>
+
+</body>
+</html>
